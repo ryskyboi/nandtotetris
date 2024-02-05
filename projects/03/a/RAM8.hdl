@@ -2,6 +2,14 @@
 // and the book "The Elements of Computing Systems"
 // by Nisan and Schocken, MIT Press.
 // File name: projects/03/a/RAM8.hdl
+// And16(a=a, b=aout, out=aand);
+// And16(a=b, b=bout, out=band);
+// And16(a=c, b=cout, out=cand);
+// And16(a=d, b=dout, out=dand);
+// And16(a=e, b=eout, out=eand);
+// And16(a=f, b=fout, out=fand);
+// And16(a=g, b=gout, out=gand);
+// And16(a=h, b=hout, out=hand);
 /**
  * Memory of eight 16-bit registers.
  * If load is asserted, the value of the register selected by
@@ -13,5 +21,14 @@ CHIP RAM8 {
     OUT out[16];
 
     PARTS:
-    //// Replace this comment with your code.
+    DMux8Way(in=load, sel=address, a=a, b=b, c=c, d=d, e=e, f=f, g=g, h=h);
+    Register(in=in, load=a, out=aout);
+    Register(in=in, load=b, out=bout);
+    Register(in=in, load=c, out=cout);
+    Register(in=in, load=d, out=dout);
+    Register(in=in, load=e, out=eout);
+    Register(in=in, load=f, out=fout);
+    Register(in=in, load=g, out=gout);
+    Register(in=in, load=h, out=hout);
+    Mux8Way16(a=aout, b=bout, c=cout, d=dout, e=eout, f=fout, g=gout, h=hout, sel=address, out=out);
 }

@@ -14,9 +14,13 @@
  * and de-assert the other two bits. 
  */
 CHIP PC {
-    IN in[16],inc, load, reset;
+    IN in[16], inc, load, reset;
     OUT out[16];
     
     PARTS:
-    //// Replace this comment with your code.
+    Inc16(in=oldout, out=plusone);
+    Or3Way(a=inc, b=load, c=reset, out=sel);
+    Mux16(a=plusone, b=in, sel=load, out=result1);
+    Mux16(a=result1, b[0..15]=false, sel=reset, out=result2);
+    Register(in=result2, load=sel, out=oldout, out=out);
 }
