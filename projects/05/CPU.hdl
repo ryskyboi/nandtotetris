@@ -27,10 +27,47 @@ CHIP CPU {
                          // the current program (reset==0).
 
     OUT outM[16],        // M value output
-        writeM,          // Write to M? 
+        writeM,          // Write to M?
         addressM[15],    // Address in data memory (of M)
         pc[15];          // Address of next instruction
 
     PARTS:
-    //// Replace this comment with your code.
+    Mux16(a=instruction, b=aluOut, sel=instruction[15], out=regAIn);
+
+    ///should we load the a Register?
+    Not(in=instruction[15], out=aInst);
+    Or(a=aInst, b=instruction[5], out=loadA);
+
+    // AReg
+    Register(in=regAIn, load=loadA, out=regAOut1, out[0..14]=addressM, out=regAOut3);
+
+    // A or M reg
+    Mux16(a=regAOut1, b=inM, sel=instruction[12], out=aOrM);
+    ALU(x=outD, y=aOrM, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6], out=outM, out=aluOut, out=inD, zr=zr, ng=ng);
+
+    //LoadD
+    And(a=instruction[4], b=instruction[15], out=loadD);
+    DRegister(in=inD, load=loadD, out=outD);
+
+    // sorting out weather there is a conditional jump
+    //if positive
+    Not(in=ng, out=isPos);
+    Not(in=zr, out=notZero);
+    And(a=isPos, b=notZero, out=isStrictlyPos);
+    And(a=isStrictlyPos, b=instruction[0], out=jump1);
+    //if 0
+    And(a=zr, b=instruction[1], out=jump2);
+    // if negative
+    And(a=ng, b=instruction[2], out=jump3);
+
+    Or(a=jump1, b=jump2, out=greaterOrEqual);
+
+    //all together
+    Or(a=greaterOrEqual, b=jump3, out=loadjump);
+    And(a=loadjump, b=instruction[15], out=loadin);
+
+    PC(in=regAOut3, inc=true, load=loadin, reset=reset, out[0..14]=pc);
+
+    /load M?
+    And(a=instruction[15], b=instruction[3], out=writeM);
 }

@@ -20,4 +20,7 @@ CHIP Memory {
 
     PARTS:
     //// Replace this comment with your code.
+    /// Mux16(a=ramChip, b=ScreenKeyboard, sel=address[15], out=selected)
+    DMux(in=load, sel=in[15], a=toRam, b=screenKeyboard);
+    DMux(in=screenKeyboard, sel=in[14], a=tocreen, b=screenKeyboard);
 }
