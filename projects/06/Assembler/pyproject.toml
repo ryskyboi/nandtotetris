@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "assembler"
+version = "0.1.0"
+description = "My hack machine assembler written in python"
+authors = ["rysky-boi <dave@rysk.finance>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
