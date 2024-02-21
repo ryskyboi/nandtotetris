@@ -4,6 +4,7 @@ from pathlib import Path
 
 from code import CodeGen
 from myparser import Parser
+from symbols import Symbols
 
 class Main:
     def _file_handler(self, file_from: str | Path, file_to: str | Path) -> Tuple[Path, Path]:
@@ -22,8 +23,10 @@ class Main:
     def main(self, file_from: str | Path, file_to: str | Path):
         file_from, file_to = self._file_handler(file_from, file_to)
         with open(file_from, 'r') as file, open(file_to, 'w') as output:
-            lines = [line for line in file if line.strip()]
-            data = ''.join(lines)
+            lines = [line.strip() for line in file]
+            lines = [line for line in lines if line.strip() and line[:2] != "//"]
+            data = '\n'.join(lines)
+            data = Symbols().run(data)
             parsed = Parser().parse(data)
             code = CodeGen().generate_all(parsed)
             output.write(code)
