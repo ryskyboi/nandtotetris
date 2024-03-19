@@ -28,7 +28,7 @@ class Main:
         file_from, file_to = self._file_handler(file_from, file_to)
         with open(file_from, 'r') as file, open(file_to, 'w') as output:
             commands = self.parser.parse(file.read())
-            parsed = self.codewriter.run(commands)
+            parsed = self.codewriter.run(commands, file_from.name.strip('.vm'))
             output.write(parsed)
 
     def parse_and_run(self):

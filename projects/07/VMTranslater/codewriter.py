@@ -10,10 +10,10 @@ class Compile:
         self.memory = Memory()
         self.arithmetic = Arithmetic()
 
-    def _single_execution(self, command: Command) -> str:
-        if isinstance(command, C_POP) or isinstance(command, C_PUSH): return self.memory.access(command)
+    def _single_execution(self, command: Command, file_name: str) -> str:
+        if isinstance(command, C_POP) or isinstance(command, C_PUSH): return self.memory.access(command, file_name)
         elif isinstance(command, C_ARITHMETIC): return self.arithmetic.operate(command)
         else: raise NotImplementedError()
 
-    def run(self, commands: list[Command]) -> str:
-        return '\n'.join([self._single_execution(comm) for comm in commands])
+    def run(self, commands: list[Command], file_name: str) -> str:
+        return '\n'.join([self._single_execution(comm, file_name) for comm in commands])
