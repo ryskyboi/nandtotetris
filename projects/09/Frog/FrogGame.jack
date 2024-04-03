@@ -1,0 +1,89 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/09/Square/FrogGame.jack
+
+class FrogGame {
+    field int key;
+    field boolean exit;
+    // Frog Parameters
+	field Frog frog; // The frog object
+
+    field int dx; // Frogs movment in the x and y plane
+
+	// isJumping Parameters
+	field bool isJumping; //Is the frog in the air
+	field Jump jump; //Array of the jump parabola
+    field array y_cords; //Array of the y cords of the jump
+    field int ts; //Total time of the jump
+
+
+   /** Constructs a new Frog. */
+    constructor FrogGame new(int _floor, int _jumpHeight, int _jumpSpeed)  {
+        do Screen.drawRectangle(0, _floor + 16, 511, _floor + 16 + 2 );
+        let key = 0;
+        let exit = false;
+        let frog = Frog.new(_floor);
+        let isJumping = false;
+	    let jump = Jump.new(_jumpHeight, _jumpSpeed);
+        let y_cords = jump.getJumpYCords();
+        let ts = jump.totalTs() + 1;
+        return this;
+    }
+
+    /** Disposes this game. */
+    method void dispose() {
+        do frog.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    /** Moves the frog in the current direction. */
+    method void movex() {
+        do frog.move(dx, 0);
+        do Sys.wait(5);  // delays the next movement
+        return;
+    }
+
+    method void checkkey() {
+        let dx = 0;
+        let key = Keyboard.keyPressed();
+        if (key = 81)  { let exit = true; }     // q key
+        if (key = 130) { let dx = -6; }   // left arrow
+        if (key = 132) { let dx = 6; }   // right arrow
+        if (key = 32)  { let isJumping = true;} // Space bar
+        do Sys.wait(10);  // delays the next movement
+        return;
+    }
+
+    /** Runs the game: handles the user's inputs and moves the frog accordingly */
+    method void run() {
+        var int i, _y;
+
+        while (~exit) {
+           // waits for a key to be pressed
+            while (key = 0) {
+              do checkkey();
+            }
+
+            if (isJumping) {
+                let i = 0;
+                while (i < ts) {
+                    do checkkey();
+                    let _y = y_cords[i];
+                    do frog.move( 2 * dx, _y); // We move more in the x direction while in the air
+                    do Sys.wait(20);  // delays the next movement
+                    let i = i + 1;
+                }
+                let isJumping = false;
+            }
+
+            // waits for the key to be released
+            while (~(key = 0)) {
+                do checkkey();
+                do movex();
+           }
+      }     // while
+      return;
+    }
+}

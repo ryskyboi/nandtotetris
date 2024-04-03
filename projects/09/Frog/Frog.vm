@@ -1,0 +1,331 @@
+function Frog.new 1
+push constant 5
+call Memory.alloc 1
+pop pointer 0
+push constant 0
+pop this 0
+push argument 0
+pop this 1
+push argument 0
+pop this 2
+push constant 255
+push constant 16
+sub
+pop this 3
+push constant 511
+push constant 16
+sub
+pop this 4
+push pointer 0
+call Frog.draw 1
+pop temp 0
+push pointer 0
+return
+function Frog.dispose 0
+push argument 0
+pop pointer 0
+push pointer 0
+call Memory.deAlloc 1
+pop temp 0
+push constant 0
+return
+function Frog.get_mem 1
+push argument 0
+pop pointer 0
+push constant 32
+push this 1
+call Math.multiply 2
+push this 0
+push constant 16
+call Math.divide 2
+add
+pop local 0
+push constant 16384
+push local 0
+add
+return
+function Frog.hide 1
+push argument 0
+pop pointer 0
+push pointer 0
+call Frog.get_mem 1
+pop local 0
+push local 0
+push constant 0
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 32
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 64
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 96
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 128
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 160
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 192
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 224
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 256
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 288
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 320
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 352
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 384
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 416
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 448
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 480
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function Frog.draw 1
+push argument 0
+pop pointer 0
+push pointer 0
+call Frog.get_mem 1
+pop local 0
+push local 0
+push constant 0
+add
+push constant 30750
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 32
+add
+push constant 30751
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 64
+add
+push constant 19411
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 96
+add
+push constant 31711
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 128
+add
+push constant 31134
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 160
+add
+push constant 32767
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 192
+add
+push constant 16387
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 224
+add
+push constant 32767
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 256
+add
+push constant 32766
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 288
+add
+push constant 24582
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 320
+add
+push constant 24571
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 352
+add
+push constant 30127
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 384
+add
+push constant 19026
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 416
+add
+push constant 29743
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 448
+add
+push constant 3505
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 480
+add
+push constant 7224
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function Frog.move 2
+push argument 0
+pop pointer 0
+push this 0
+push argument 1
+add
+pop local 0
+push this 2
+push argument 2
+sub
+pop local 1
+push pointer 0
+call Frog.hide 1
+pop temp 0
+push local 0
+push constant 0
+lt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 0
+pop this 0
+goto IF_END0
+label IF_FALSE0
+push local 0
+push this 4
+gt
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push this 4
+pop this 0
+goto IF_END1
+label IF_FALSE1
+push local 0
+pop this 0
+label IF_END1
+label IF_END0
+push local 1
+push constant 0
+lt
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push constant 0
+pop this 1
+goto IF_END2
+label IF_FALSE2
+push local 1
+push this 3
+gt
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push this 3
+pop this 1
+goto IF_END3
+label IF_FALSE3
+push local 1
+pop this 1
+label IF_END3
+label IF_END2
+push pointer 0
+call Frog.draw 1
+pop temp 0
+push constant 0
+return

@@ -1,0 +1,71 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/09/Pong/Frog.jack
+
+/**
+*Jump file where the array can be computed ahead of time as the jump arc is a static parabola
+*The jump arc is a parabola with the equation y = -jumpSpeed*t^2 + jumpHeight
+*The roots of the parabola are the start and end points of the jump
+*/
+
+
+class Jump{
+	// sqrt( jH / jS ) shoulr be an integer for this to work well
+	field int jumpHeight; //How high the frog is jumping in pixels
+	field int jumpSpeed; //How wide extyreme the arec of the parabola is
+
+	constructor Jump new(int _jumpHeight, int _jumpSpeed) {
+		let jumpHeight = _jumpHeight;
+		let jumpSpeed = _jumpSpeed;
+		return this;
+	}
+
+    method int jumpmath(int _jumpHeight, int _jumpSpeed, int t) {
+		// Jump will nbe modeled as a parabola
+		// y = -ax^2 + k which comes from a rewriting of ax^2 + bx + c = 0 centred about 0
+		// y = -jumpSpeed*t^2 + jumpHeight
+		var int y;
+		let y = t * t;
+		let y = -y;
+		let y = y * _jumpSpeed;
+		let y = y + _jumpHeight;
+		return y;
+	}
+
+	method int maxT() {
+		var int max_t;
+		let max_t = jumpHeight / jumpSpeed;
+		return Math.sqrt(max_t); // Jump is symmetric so min_t = -max_t
+	}
+
+	method int totalTs() {
+		var int total_ts, max_t;
+		let max_t = maxT();
+		let total_ts = max_t * 2;
+		return total_ts;
+	}
+
+	method Array getJumpYCords() {
+		// Returns the x coordinates of the frog in the air
+		// The end points of the array will be the roots
+		// x = +- sqrt(k/a)
+		var Array cords;
+		var int i, current, total_ts, max_t; //How many frames the jump will take
+		let max_t = maxT();
+		let total_ts = totalTs();
+		let cords = Array.new(total_ts);
+		let total_ts = total_ts + 1; // Hack to make things symmetrical
+		let i = 0;
+		while (i < total_ts ) {
+			let current = -1 * max_t + i;
+			let cords[i] = jumpmath(jumpHeight, jumpSpeed, current);
+			// do Output.printInt(cords[i]);
+			// do Output.printString(" ");
+			let i = i + 1;
+		}
+		return cords;
+	}
+
+
+}

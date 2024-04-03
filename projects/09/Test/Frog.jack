@@ -1,0 +1,117 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/09/Pong/Frog.jack
+
+/**
+*Simple game a a frog jumping across lillypads
+*/
+
+
+class Frog{
+	field int x, y; //Frogs top left corner n pixels
+	field int floor; // x coordinate of the floor
+
+
+	// sqrt( H / S ) shoulr be an integer for this to work well
+	// field int jumpHeight //How high the frog is jumping in pixels
+	// field int jumpSpeed //How wide extyreme the arec of the parabola is
+
+
+	constructor Frog new(int _floor) {
+		var Jump _jump;
+		let x = 0;
+		let y = _floor;
+		let floor = _floor;
+		do draw();
+		return this;
+	}
+
+	/** Deallocates the Frog's memory. */
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    /** Gets the current memory adress of the frog. */
+    method int get_mem() {
+		var int location;
+		let location = (32 * y) + (x / 16);
+        return (16384 + location);
+    }
+
+	/** Hides the Frog. */
+    method void hide() {
+		var int memAddress;
+    	let memAddress = get_mem();
+    	do Memory.poke(memAddress + 0, 0);
+    	do Memory.poke(memAddress + 32, 0);
+    	do Memory.poke(memAddress + 64, 0);
+    	do Memory.poke(memAddress + 96, 0);
+    	do Memory.poke(memAddress + 128, 0);
+    	do Memory.poke(memAddress + 160, 0);
+    	do Memory.poke(memAddress + 192, 0);
+    	do Memory.poke(memAddress + 224, 0);
+    	do Memory.poke(memAddress + 256, 0);
+    	do Memory.poke(memAddress + 288, 0);
+    	do Memory.poke(memAddress + 320, 0);
+    	do Memory.poke(memAddress + 352, 0);
+    	do Memory.poke(memAddress + 384, 0);
+    	do Memory.poke(memAddress + 416, 0);
+    	do Memory.poke(memAddress + 448, 0);
+    	do Memory.poke(memAddress + 480, 0);
+    	return;
+    }
+
+    /** Draws the Frog. */
+    method void draw() {
+		var int memAddress;
+    	let memAddress = get_mem();
+    	do Memory.poke(memAddress + 0, 30750);
+    	do Memory.poke(memAddress + 32, -30751);
+    	do Memory.poke(memAddress + 64, -19411);
+    	do Memory.poke(memAddress + 96, -31711);
+    	do Memory.poke(memAddress + 128, 31134);
+    	do Memory.poke(memAddress + 160, -32767);
+    	do Memory.poke(memAddress + 192, -16387);
+    	do Memory.poke(memAddress + 224, -32767);
+    	do Memory.poke(memAddress + 256, 32766);
+    	do Memory.poke(memAddress + 288, 24582);
+    	do Memory.poke(memAddress + 320, -24571);
+    	do Memory.poke(memAddress + 352, -30127);
+    	do Memory.poke(memAddress + 384, 19026);
+    	do Memory.poke(memAddress + 416, -29743);
+    	do Memory.poke(memAddress + 448, -3505);
+    	do Memory.poke(memAddress + 480, 7224);
+    	return;
+    }
+
+	method void move(int _x, int _y) {
+		do hide();
+
+		if ((x + _x) < 0) {
+			let x = 0;
+		}
+		else {
+			if ((x + _x) > (511 - 16)) {
+				let x = (511 - 16);
+			}
+			else {
+				let x = (x + _x);
+			}
+		}
+		if ((y + _y) < floor) {
+			let y = floor;
+		}
+		else {
+			if ((y + _y) > (255 - 16)) {
+			let y = (255 - 16);
+			}
+			else {
+				let y = (y + _y);
+			}
+		}
+		do draw();
+		return;
+	}
+}
