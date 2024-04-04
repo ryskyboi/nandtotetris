@@ -3,6 +3,12 @@
 // by Nisan and Schocken, MIT Press.
 // File name: projects/09/Square/FrogGame.jack
 
+/**
+*Simple game a a frog jumping across the screen
+*The frog is controlled by the arrow keys
+*Jumping is done by pressing the spacebar
+*/
+
 class FrogGame {
     field int key;
     field boolean exit;

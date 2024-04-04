@@ -9,11 +9,11 @@ pop this 1
 push argument 0
 pop this 2
 push constant 255
-push constant 16
+push constant 1
 sub
 pop this 3
 push constant 511
-push constant 16
+push constant 1
 sub
 pop this 4
 push pointer 0

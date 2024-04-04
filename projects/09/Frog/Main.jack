@@ -8,10 +8,10 @@
  */
 class Main {
 
-    /** Initializes a Pong game and starts running it. */
+    /** Initializes a Frog game and starts running it. */
     function void main() {
         var FrogGame game;
-        let game = FrogGame.new(200, 72, 2); //sqrt( jH / jS ) shoulr be an integer for this to work well
+        let game = FrogGame.new(200, 200, 2); //sqrt( jH / jS ) shoulr be an integer for this to work well
         do game.run();
         return;
     }

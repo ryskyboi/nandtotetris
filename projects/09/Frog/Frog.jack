@@ -26,8 +26,8 @@ class Frog{
 		let x = 0;
 		let y = _floor;
 		let floor = _floor;
-		let Bottom = (255 - 16);
-		let End = (511 - 16);
+		let Bottom = (255 - 1);
+		let End = (511 - 1);
 		do draw();
 		return this;
 	}

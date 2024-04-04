@@ -94,7 +94,6 @@ M=D
 '''
         else: return f'''// pushes pointer value
 @{this_that}
-A=M
 D=M
 @R0
 M=M+1
