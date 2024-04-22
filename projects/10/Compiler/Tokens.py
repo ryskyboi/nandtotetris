@@ -1,11 +1,20 @@
 from dataclasses import dataclass
+from abc import ABC
+from typing import Union
 
+
+# Terminals
 KEYWORDS = ['class', 'constructor', 'function', 'method', 'field', 'static', 'var', 'int', 'char', 'boolean', 'void', 'true', 'false', 'null', 'this', 'let', "do", 'if', 'else', 'while', 'return']
 SYMBOLS = ['{', '}', '(', ')', '[', ']', '.', ',', ';', '+', '-', '*', '/', '&', '|', '<', '>', '=', '~']
 
 
 @dataclass
-class Keyword:
+class Token(ABC):
+    value: Union[str, int]
+
+
+@dataclass
+class Keyword(Token):
     value: str
 
     def __post__init__(self):
@@ -16,30 +25,35 @@ class Keyword:
 
 
 @dataclass
-class Symbol:
+class Symbol(Token):
     value: str
 
     def __post__init__(self):
         assert self.value in SYMBOLS, f"Invalid symbol {self.value}"
 
+    def _replace(self, string: str):
+        return string.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('\"', '&quot;')
+
     def __str__(self):
-        return f"<symbol> {self.value} </symbol>"
+        return f"""<symbol> {self._replace(self.value)} </symbol>"""
 
 
 @dataclass
-class Identifier:
+class Identifier(Token):
     value: str
 
     def __post__init__(self):
         assert self.value.replace("_", "").isalnum(), f"Invalid identifier {self.value}"
         assert not self.value[0].isnumeric(), f"Invalid identifier {self.value} cannot start with a number"
+        assert self.value not in KEYWORDS, f"Invalid identifier {self.value} cannot be a keyword"
+        assert self.value not in SYMBOLS, f"Invalid identifier {self.value} cannot be a symbol"
 
     def __str__(self):
         return f"<identifier> {self.value} </identifier>"
 
 
 @dataclass
-class IntegerConstant:
+class IntegerConstant(Token):
     value: int
 
     def __post__init__(self):
@@ -51,7 +65,7 @@ class IntegerConstant:
 
 
 @dataclass
-class StringConstant:
+class StringConstant(Token):
     value: str
 
     def __post__init__(self):
