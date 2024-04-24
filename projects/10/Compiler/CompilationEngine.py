@@ -176,11 +176,15 @@ class Compiler:
             return xml + "</term>\n", data[1:]
         if isinstance(data[0], Identifier):
             xml += f"{data[0]}\n"
-            if data[1].value == "[" or data[1].value == "(":
-                _value = data[1].value
+            if data[1].value == "[":
                 xml += f"{data[1]}\n"
                 xml, data = self.CompileExpression(xml, data[2:])
-                assert data[0].value == {"[":"]", "(": ")"}[_value], f"Invalid term end: {data[0].value}"  # type: ignore
+                assert data[0].value == "]", f"Invalid term end: {data[0].value}"  # type: ignore
+                xml += f"{data[0]}\n"
+            if data[1].value == "(":
+                xml += f"{data[1]}\n"
+                xml, data = self.CompileExpressionList(xml, data[2:])
+                assert data[0].value == "(", f"Invalid term end: {data[0].value}"  # type: ignore
                 xml += f"{data[0]}\n"
             elif data[1].value == ".":
                 xml += f"{data[1]}\n"
