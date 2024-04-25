@@ -151,7 +151,7 @@ class Compiler:
         assert data[0].value == "}", f"Invalid if end: {data[0].value}"
         xml += f"{data[0]}\n"
         data = data[1:]
-        while data[0].value == "else":
+        if data[0].value == "else":
             xml += f"{data[0]}\n"
             assert data[1].value == "{", f"Invalid else start: {data[1].value}"
             xml += f"{data[1]}\n"
