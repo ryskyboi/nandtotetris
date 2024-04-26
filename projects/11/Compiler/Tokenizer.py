@@ -23,8 +23,8 @@ class Tokenize():
             if data[0].startswith('"'):
                 _value = data.pop(0)
                 while not data[0].endswith('"'):
-                    _value += data.pop(0)
-                _value += data.pop(0)
+                    _value += " " + data.pop(0)
+                _value += " " + data.pop(0)
                 new_list.append(_value)
             else:
                 new_list.append(data.pop(0))

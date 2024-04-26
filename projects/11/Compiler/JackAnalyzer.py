@@ -23,7 +23,7 @@ class Analyze:
         files, dir_to = self._file_handler(file_from)
         for file in files:
             if not file.name.endswith('.jack'): continue
-            with open(file, "r") as f, open(dir_to / "MyXml" / (file.name.strip('.jack') + ".vm"), "w") as output:
+            with open(file, "r") as f, open(dir_to / (file.name.strip('.jack') + ".vm"), "w") as output:
                 lines = [line for line in f.read().splitlines() if line.strip() != '' and not line.startswith('//')]
                 lines = self._remove_multiline_comments(lines)
                 lines = [item for sublist in [line.split('//')[0].strip() for line in lines if line.strip()] for item in sublist.split(' ')]

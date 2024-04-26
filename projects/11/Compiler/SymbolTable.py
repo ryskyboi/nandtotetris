@@ -4,6 +4,7 @@ from dataclasses import dataclass
 TABLE_TYPES = ["static", "field", "arg", "var"]
 MAP = {"arg": "argument", "var": "local", "static": "static", "field": "this"}
 
+
 @dataclass
 class TableEntry:
     type: str
@@ -41,9 +42,9 @@ class Tables:
 
     def KindOf(self, name: str) -> str:
         if name in self.subroutine_table:
-            return self.subroutine_table[name].kind
+            return MAP[self.subroutine_table[name].kind]
         elif name in self.class_table:
-            return self.class_table[name].kind
+            return MAP[self.class_table[name].kind]
         return "none"
 
     def TypeOf(self, name: str) -> str:
