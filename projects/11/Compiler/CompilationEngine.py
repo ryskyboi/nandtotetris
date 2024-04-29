@@ -3,7 +3,7 @@ from SymbolTable import Tables
 from Tokens import Token, IntegerConstant, StringConstant, Identifier
 
 RETURN_TYPE = tuple[str, list[Token]]
-TYPES = ["int", "char", "boolean",  "Array"]
+TYPES = ["int", "char", "boolean"]
 OPS = ["+", "-", "*", "/", "&", "|", "<", ">", "="]
 OP_MAP = {"+": "add", "-": "sub", "*": "call Math.multiply 2", "/": "call Math.divide 2", "&": "and", "|": "or", "<": "lt", ">": "gt", "=": "eq"}
 
@@ -72,8 +72,8 @@ class Compiler:
         return vm, data[1:]
 
     def CompileParameterList(self, vm: str, data: list[Token]) -> RETURN_TYPE:
-        while data[0].value in TYPES:
-            assert data[0].value in TYPES, f"Invalid parameter type: {data[0].value}"
+        while data[0].value in TYPES or isinstance(data[0], Identifier):
+            assert data[0].value in TYPES or isinstance(data[0], Identifier), f"Invalid parameter type: {data[0].value}"
             assert isinstance(data[1], Identifier), f"Invalid parameter name: {data[1].value}"
             self.tables.add_entry(data[1].value, str(data[0].value), "arg")
             data = data[2:]
