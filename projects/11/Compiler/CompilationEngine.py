@@ -1,10 +1,9 @@
-
 from VMWriter import CodeWriter
 from SymbolTable import Tables
 from Tokens import Token, IntegerConstant, StringConstant, Identifier
 
 RETURN_TYPE = tuple[str, list[Token]]
-TYPES = ["int", "char", "boolean"]
+TYPES = ["int", "char", "boolean",  "Array"]
 OPS = ["+", "-", "*", "/", "&", "|", "<", ">", "="]
 OP_MAP = {"+": "add", "-": "sub", "*": "call Math.multiply 2", "/": "call Math.divide 2", "&": "and", "|": "or", "<": "lt", ">": "gt", "=": "eq"}
 
@@ -20,7 +19,6 @@ class Compiler:
         return vm
 
     def CompileClass(self, vm: str, data: list[Token]) -> str:
-        #print(vm, "CompileClass", data)
         assert data[0].value == "class", f"Not a class: {data[0].value}"
         assert isinstance(data[1], Identifier), f"Invalid class name: {data[1].value}"
         assert data[2].value == "{", f"Invalid class start: {data[2].value}"
@@ -35,7 +33,6 @@ class Compiler:
         return vm
 
     def CompileClassVarDec(self, vm: str, data: list[Token]) -> RETURN_TYPE:
-        #print(vm, "CompileClassVarDec", data)
         assert data[0].value == "field" or data[0].value == "static", f"Not a class var dec: {data[0].value}"
         assert data[1].value in TYPES or isinstance(data[1], Identifier), f"Invalid class var dec type: {data[1].value}"
         assert isinstance(data[2], Identifier), f"Invalid class var dec name: {data[2].value}"
@@ -50,12 +47,12 @@ class Compiler:
         return vm, data[1:]
 
     def CompileSubroutine(self, vm: str, data: list[Token]) -> RETURN_TYPE:
-        #print(vm, "CompileSubroutine", data)
         assert data[0].value in ["constructor", "function", "method"], f"Not a subroutine: {data[0].value}"
         assert data[1].value in TYPES + ["void"] or isinstance(data[1], Identifier), f"Invalid subroutine return type: {data[1].value}"
         assert isinstance(data[2], Identifier), f"Invalid subroutine name: {data[2].value}"
         assert data[3].value == "(", f"Invalid subroutine start: {data[3].value}"
-        _kind, _type, _name = data[0].value, str(data[1].value), str(data[2].value)
+        _kind, _name = data[0].value, str(data[2].value)
+        if _kind == "method": self.tables.add_entry("this", self.class_name, "arg")
         vm, data = self.CompileParameterList(vm, data[4:])
         assert data[0].value == ")", f"Invalid subroutine end: {data[0].value}"
         assert data[1].value == "{", f"Invalid subroutine start: {data[1].value}"
@@ -75,7 +72,6 @@ class Compiler:
         return vm, data[1:]
 
     def CompileParameterList(self, vm: str, data: list[Token]) -> RETURN_TYPE:
-        #print(vm, "CompileParameterList", data)
         while data[0].value in TYPES:
             assert data[0].value in TYPES, f"Invalid parameter type: {data[0].value}"
             assert isinstance(data[1], Identifier), f"Invalid parameter name: {data[1].value}"
@@ -86,7 +82,6 @@ class Compiler:
         return vm,  data
 
     def CompileVarDec(self, vm: str, data: list[Token]) -> RETURN_TYPE:
-        #print(vm, "CompileVarDec", data)
         assert data[0].value == "var", f"Not a var dec: {data[0].value}"
         assert data[1].value in TYPES or isinstance(data[1], Identifier), f"Invalid var dec type: {data[1].value}"
         assert isinstance(data[2], Identifier), f"Invalid var dec name: {data[2].value}"
@@ -101,7 +96,6 @@ class Compiler:
         return vm, data[1:]
 
     def CompileStatements(self, vm: str, data: list[Token]) -> RETURN_TYPE:
-        #print(vm, "CompileStatements", data)
         while data[0].value in ["let", "if", "while", "do", "return"]:
             if data[0].value == "let": vm, data = self.CompileLet(vm, data)
             elif data[0].value == "if": vm, data = self.CompileIf(vm, data)
@@ -111,7 +105,6 @@ class Compiler:
         return vm, data
 
     def CompileDo(self, vm: str, data: list[Token])  -> RETURN_TYPE:
-        #print(vm, "CompileDo", data)
         assert data[0].value == "do", f"Not a do: {data[0].value}"
         assert isinstance(data[1], Identifier), f"Invalid do name: {data[1].value}"
         name = data[1].value
@@ -136,7 +129,6 @@ class Compiler:
         return vm + self.writer.write_call(_class, _func, num + _add ) + self.writer.write_pop("temp", 0), data[2:]
 
     def CompileLet(self, vm: str, data: list[Token])  -> RETURN_TYPE:
-        #print(vm, "CompileLet", data)
         assert data[0].value == "let", f"Not a let: {data[0].value}"
         assert isinstance(data[1], Identifier), f"Invalid let name: {data[1].value}"
         id = data[1]
@@ -155,7 +147,6 @@ class Compiler:
         return vm + add_to_stack, data[1:]
 
     def CompileWhile(self, vm: str, data: list[Token])  -> RETURN_TYPE:
-        #print(vm, "CompileWhile", data)
         assert data[0].value == "while", f"Not a while: {data[0].value}"
         assert data[1].value == "(", f"Invalid while expression start: {data[1].value}"
         l1, l2 = f"LABEL_{self.label}", f"LABEL_{self.label + 1}"
@@ -171,7 +162,6 @@ class Compiler:
         return vm, data[1:]
 
     def CompileReturn(self, vm: str, data: list[Token])  -> RETURN_TYPE:
-        #print(vm, "CompileReturn", data)
         assert data[0].value == "return", f"Not a return: {data[0].value}"
         self.writer.write_push("pointer", 0)
         if data[1].value != ";":
@@ -186,7 +176,6 @@ class Compiler:
         return vm + self.writer.write_return(), data[1:]
 
     def CompileIf(self, vm: str, data: list[Token])  -> RETURN_TYPE:
-        #print(vm, "CompileIf", data)
         assert data[0].value == "if", f"Not an if: {data[0].value}"
         assert data[1].value == "(", f"Invalid if expression start: {data[1].value}"
         vm, data = self.CompileExpression(vm, data[2:])
@@ -211,7 +200,6 @@ class Compiler:
         return vm, data
 
     def CompileExpression(self, vm: str, data: list[Token]) -> RETURN_TYPE:
-        #print(vm, "CompileExpression", data)
         vm, data = self.CompileTerm(vm, data)
         while data[0].value in ["+", "-", "*", "/", "&", "|", "<", ">", "="]:
             op = OP_MAP[data[0].value]  # type: ignore
@@ -220,10 +208,8 @@ class Compiler:
         return vm, data
 
     def CompileTerm(self, vm: str, data: list[Token])  -> RETURN_TYPE:
-        #print(vm, "CompileTerm", data)
         if isinstance(data[0], IntegerConstant): return vm + self.writer.write_push("constant", data[0].value), data[1:]
         elif isinstance(data[0], StringConstant):
-            print(data[0].value, len(data[0].value))
             vm += f"push constant {len(data[0].value)}\ncall String.new 1\n" + "".join(f"push constant {ord(char)}\ncall String.appendChar 2\n" for char in data[0].value)
             return vm, data[1:]
         elif data[0].value == "this": return vm + "push pointer 0\n", data[1:]  # This is the base address of the current object
@@ -271,7 +257,6 @@ class Compiler:
             raise ValueError(f"Invalid term: {data[0].value}")
 
     def CompileExpressionList(self, vm: str, data: list[Token])  -> tuple[str, list[Token], int]:
-        #print(vm, "CompileExpressionList", data)
         num = 0
         while data[0].value != ")":
             vm, data = self.CompileExpression(vm, data)
