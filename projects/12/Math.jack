@@ -15,6 +15,16 @@ class Math {
 
     // Initializes the Math library.
     function void init() {
+        var int i;
+        let n = 16;
+        let powersOfTwo = Array.new(n);
+        let powersOfTwo[0] = 1;
+        let i = 1;
+        while (i < n) {
+            let powersOfTwo[i] = Math.multiply(powersOfTwo[i-1], 2);
+            let i = i + 1;
+        }
+        return;
     }
 
     /** Returns the product of x and y. 
@@ -23,6 +33,20 @@ class Math {
      *  Thus, in Jack, x * y and Math.multiply(x,y) return the same value.
      */
     function int multiply(int x, int y) {
+        var int sum, shiftedX, i;
+        var Array bit_values;
+        let bit_values = Math.bit(y);
+        let sum = 0;
+        let shiftedX = x;
+        let i = n;
+        while (i < 16) {
+            if (bit_values[i]){
+                let sum = sum + shiftedX;
+            }
+            let shiftedX = shiftedX + shiftedX;
+            let i = i + 1;
+        }
+        return sum;
     }
 
     /** Returns the integer part of x / y.
@@ -31,25 +55,106 @@ class Math {
      *  Thus, x/y and Math.divide(x,y) return the same value.
      */
     function int divide(int x, int y) {
+        return Math._divide(Math.abs(x), Math.abs(y)) * Math.sign(x, y);
     }
 
     /** Returns the integer part of the square root of x.
     */
     function int sqrt(int x) {
+        var int left, right, mid;
+        let left = Math.multiply(x, x);
+        let right = Math.multiply(x + 1, x + 1);
+        while (left < right) {
+            let mid = Math.divide(x, 2);
+            if (x = mid) {
+                return mid;
+            } else {
+                if (x < mid) {
+                    let right = mid;
+                } else {
+                    let left = mid;
+                }
+            }
+        }
+        return left;
     }
 
     /** Returns the greater value.
     */
     function int max(int a, int b) {
+        if (a > b) {
+            return a;
+        }
+        return b;
     }
 
     /** Returns the smaller value.
     */
     function int min(int a, int b) {
+        if (a < b) {
+            return a;
+        }
+        return b;
     }
 
     /** Returns the absolute value of x
     */
     function int abs(int x) {
+        if (x < 0) {
+            return -1 * x;
+        }
+        return x;
+    }
+
+    // Returns an array of values for which correspond to when the i-th bit of x is 1
+    function Array bit(int x) {
+        var int curr_n, i;
+        var Array value;
+        let value = Array.new(n);
+        let i = n;
+        while (x > 0) {  //It may prove better to do this with i but idk
+            if (x > curr_n) {
+                let value[i] = true;
+                let x = x - curr_n;
+            }
+            else {
+                let value[i] = false;
+            }
+            let i = i - 1;
+        }
+        return value;
+    }
+
+    //Does the computation for the division algo
+    function int _divide(int x, int y) {
+        var int q;
+        if ((y > x) | (y < 0)) {
+            return 0;
+        }
+        let q = Math.divide(x, 2 * y);
+        if ((x - (2 * q * y)) < y) {
+            return 2 * q;
+        } else {
+            return (2 * q) + 1;
+        }
+    }
+
+    //Returns the sign for the division as an int for bervity
+    function int sign(int x, int y) {
+        if (x < 0) {
+            if (y < 0) {
+                return 1;
+            }
+            else {
+                return -1;
+            }
+        } else {
+            if (y < 0) {
+                return -1;
+            }
+            else {
+                return 1;
+            }
+        }
     }
 }
