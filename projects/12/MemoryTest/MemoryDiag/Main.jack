@@ -159,6 +159,8 @@ class Main {
         var int a_high;
         let a_high = (a + a_len)-1;
         if ((a < 2048) | ((a_high) > 16383)) {
+            do Output.printInt(a);
+            // do Output.printInt(a_high);
             // Block is not entirely within heap.
             do Sys.halt();
         }
