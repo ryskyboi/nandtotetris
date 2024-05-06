@@ -10,11 +10,25 @@
  * the screen is indexed (0,0).
  */
 class Screen {
+    static Array powersOfTwo; // Stores 2^0, 2^1, 2^2,..., 2^(n-1)
+    static Array bitArray;  // Stops stack overfow from the bit function
     static boolean colour;
+    static int base, n;
 
     /** Initializes the Screen. */
     function void init() {
+        var int i;
         let colour = true;
+        let base = 16384;
+        let n = 16;
+        let bitArray = Array.new(n);
+        let powersOfTwo = Array.new(n);
+        let powersOfTwo[0] = 1;
+        let i = 1;
+        while (i < n) {
+            let powersOfTwo[i] = powersOfTwo[i-1] + powersOfTwo[i-1];
+            let i = i + 1;
+        }
         return;
     }
 
@@ -39,27 +53,27 @@ class Screen {
     /** Draws the (x,y) pixel, using the current color. */
     function void drawPixel(int x, int y) {
         var int address, value, _bit, diff;
-        let address = (32 * y) + (x / 16);
-        let value = Memory.peek(16384 + address);
-        let _bit = Math.bit(x);
-        let diff = x - Math.divide(x, 16);
-        let _bit = _bit[diff];
-        if (_bit) {
+        let address = (32 * y) + (x / 16) + base;
+        let value = Memory.peek(address);
+        let _bit = Screen.bit(value);
+        let diff = x - (Math.divide(x, 16) * 16); //This should be (n)mod(16)
+        // do Output.printInt(diff);
+        if (_bit[diff] = 1) { // This will see if it is a 0 or a 1 in that location at present
             if (~colour) {
-                let value = value - Math.twoPow(diff);
-                do memory.poke(address, value);
+                let value = value - powersOfTwo[diff];
+                do Memory.poke(address, value);
             }
         } else {
             if (colour) {
-                let value = value + Math.twoPow(diff);
-                do memory.poke(address, value);
+                let value = value + powersOfTwo[diff];
+                do Memory.poke(address, value);
             }
         }
         return;
     }
 
     function void StraightLine(int a1, int a2, int b, bool isX) {
-        while (a1 < a2 + 1) {
+        while (a1 < (a2 + 1)) {
             if (isX) {
                 do Screen.drawPixel(a1, b);
             } else {
@@ -73,18 +87,24 @@ class Screen {
     /** Draws a line from pixel (x1,y1) to pixel (x2,y2), using the current color. */
     function void drawLine(int x1, int y1, int x2, int y2) {
         //deal with the special cases first
-        var int diff, a, b, x_step, y_step, dx, dy, temp;
+        var int diff, a, b, y_step, x_step, dx, dy, temp, y_move;
+        let diff = 0;
+        let a = 0;
+        let b = 0;
         if (x1 > x2) {
             let temp = x1;
             let x1 = x2;
             let x2 = temp;
-        }
-        if (y1 > y2) {
             let temp = y1;
             let y1 = y2;
             let y2 = temp;
         }
         if (x2 = x1) {
+            if (y1 > y2) {
+            let temp = y1;
+            let y1 = y2;
+            let y2 = temp;
+            }
             do Screen.StraightLine(y1, y2, x1, false);
             return;
         }
@@ -92,19 +112,25 @@ class Screen {
             do Screen.StraightLine(x1, x2, y1, true);
             return;
         }
-        let diff = 0;
-        let a = 0;
-        let b = 0;
         let dx = (x2 - x1);
         let dy = (y2 - y1);
-        while ((a < dx) & (b < dy)) {
+        if (dy < 0) {
+            let y_step = -dy;
+            let x_step = -dx;
+            let y_move = -1;
+        } else {
+            let y_step = dy;
+            let x_step = -dx;
+            let y_move = 1;
+        }
+        while ((Math.abs(a) < Math.abs(dx)) & (Math.abs(b) < Math.abs(dy))) {
             do Screen.drawPixel(x1 + a, y1 + b);
             if (diff < 0) {
                 let a = a + 1;
-                let diff = diff + dy;
+                let diff = diff + y_step;
             } else {
-                let b = b + 1;
-                let diff = diff - dx;
+                let b = b + y_move;
+                let diff = diff + x_step;
             }
         }
         return;
@@ -116,12 +142,12 @@ class Screen {
         var int a, b;
         let a = x1;
         let b = y1;
-        while(a < x2 + 1) {
-            while(b < y2 + 1) {
+        while(a < (x2 + 1)) {
+            while(b < (y2 + 1)) {
                 do Screen.drawPixel(a, b);
-                let b = b + 1;
+                let b = (b + 1);
             }
-            let a = a + 1;
+            let a = (a + 1);
             let b = y1;
         }
         return;
@@ -131,10 +157,36 @@ class Screen {
     function void drawCircle(int x, int y, int r) {
         var int dy, calulation;
         let dy = -r;
-        while(dy < r + 1) {
+        while(dy < (r + 1)) {
             let calulation = Math.sqrt((r * r) - (dy * dy));
             do Screen.drawLine(x - calulation, y + dy, x + calulation, y + dy);
+            let dy = (dy + 1);
         }
         return;
     }
+
+    // Returns an array of values for which correspond to when the i-th bit of x is 1
+    function Array bit(int x) {
+        var int curr_n, i;
+        let i = n - 2;
+        // we need to check if things are negative early in the computation
+        if ( x < 0 ) {
+            let bitArray[n - 1] = 1;
+            let x = x - (powersOfTwo[n - 1]); // x + 2^n
+        } else {
+            let bitArray[n - 1] = 0;
+        }
+        while (i > -1) {  //It may prove better to do this with i but idk x > 0
+            if ((x + 1) > powersOfTwo[i]) { // Greater than or equal in int
+                let bitArray[i] = 1;
+                let x = x - powersOfTwo[i];
+            }
+            else {
+                let bitArray[i] = 0;
+            }
+            let i = i - 1;
+        }
+        return bitArray;
+    }
+
 }

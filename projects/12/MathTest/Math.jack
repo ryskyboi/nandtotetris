@@ -12,16 +12,18 @@
 class Math {
     static int n;             // Number of bits used for representing a two's complement integer
     static Array powersOfTwo; // Stores 2^0, 2^1, 2^2,..., 2^(n-1)
+    static Array bitArray;  // Stops stack overfow from the bit function
 
     // Initializes the Math library.
     function void init() {
         var int i;
         let n = 16;
+        let bitArray = Array.new(n);
         let powersOfTwo = Array.new(n);
         let powersOfTwo[0] = 1;
         let i = 1;
         while (i < n) {
-            let powersOfTwo[i] = Math.multiply(powersOfTwo[i-1], 2);
+            let powersOfTwo[i] = powersOfTwo[i-1] + powersOfTwo[i-1];
             let i = i + 1;
         }
         return;
@@ -42,9 +44,9 @@ class Math {
         let bit_values = Math.bit(y);
         let sum = 0;
         let shiftedX = x;
-        let i = n;
-        while (i < 16) {
-            if (bit_values[i]){
+        let i = 0;
+        while (i < n) {
+            if (bit_values[i] = 1){
                 let sum = sum + shiftedX;
             }
             let shiftedX = shiftedX + shiftedX;
@@ -59,28 +61,26 @@ class Math {
      *  Thus, x/y and Math.divide(x,y) return the same value.
      */
     function int divide(int x, int y) {
-        return Math._divide(Math.abs(x), Math.abs(y)) * Math.sign(x, y);
+        var int _div, _sign;
+        let _div = Math._divide(Math.abs(x), Math.abs(y));
+        let _sign = Math.sign(x, y);
+        return _sign * _div;
     }
 
     /** Returns the integer part of the square root of x.
     */
     function int sqrt(int x) {
-        var int left, right, mid;
-        let left = Math.multiply(x, x);
-        let right = Math.multiply(x + 1, x + 1);
-        while (left < right) {
-            let mid = Math.divide(x, 2);
-            if (x = mid) {
-                return mid;
-            } else {
-                if (x < mid) {
-                    let right = mid;
-                } else {
-                    let left = mid;
-                }
+        var int y, j, pow;
+        let y = 0;
+        let j = (n / 2) - 1;
+        while (j > -1) {
+            let pow = (y + powersOfTwo[j]) * (y + powersOfTwo[j]);
+            if (((pow - 1) < x) & (pow > 0)) {
+                let y = y + powersOfTwo[j];
             }
+            let j = j - 1;
         }
-        return left;
+        return y;
     }
 
     /** Returns the greater value.
@@ -113,20 +113,25 @@ class Math {
     // Returns an array of values for which correspond to when the i-th bit of x is 1
     function Array bit(int x) {
         var int curr_n, i;
-        var Array value;
-        let value = Array.new(n);
-        let i = n;
-        while (x > 0) {  //It may prove better to do this with i but idk
-            if (x > curr_n) {
-                let value[i] = true;
-                let x = x - curr_n;
+        let i = n - 2;
+        // we need to check if things are negative early in the computation
+        if ( x < 0 ) {
+            let bitArray[n - 1] = 1;
+            let x = x - (powersOfTwo[n - 1]); // x + 2^n
+        } else {
+            let bitArray[n - 1] = 0;
+        }
+        while (i > -1) {  //It may prove better to do this with i but idk x > 0
+            if ((x + 1) > powersOfTwo[i]) { // Greater than or equal in int
+                let bitArray[i] = 1;
+                let x = x - powersOfTwo[i];
             }
             else {
-                let value[i] = false;
+                let bitArray[i] = 0;
             }
             let i = i - 1;
         }
-        return value;
+        return bitArray;
     }
 
     //Does the computation for the division algo
@@ -135,7 +140,7 @@ class Math {
         if ((y > x) | (y < 0)) {
             return 0;
         }
-        let q = Math.divide(x, 2 * y);
+        let q = Math._divide(x, 2 * y);
         if ((x - (2 * q * y)) < y) {
             return 2 * q;
         } else {

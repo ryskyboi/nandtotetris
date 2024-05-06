@@ -36,20 +36,20 @@ class Memory {
     /** Finds an available RAM block of the given size and returns
      *  a reference to its base address. */
     function int alloc(int size) {
-        var int prev, curr, segSize, minSize, minCurr, minPrev, largeVal;
+        var int prev, curr, next, segSize, minSize, minCurr, minPrev, largeVal;
         let largeVal = heap[1] + 1; // Just greater than the actual largest possible
         let prev = 0;
         let minSize = largeVal;
-        let curr = 0;
-        while (true) {
+        let curr = freeList;
+        while (next != 0) {
+            let next = heap[curr]; //next
             let segSize = heap[curr + 1]; //size
-            do Output.printInt(segSize)
             if ((segSize > size + 1) & (segSize < minSize)) { // Just need +1 extra space with strict inequality
                 let minSize = segSize;
                 let minCurr = curr;
                 let minPrev = prev;
             }
-            if (heap[curr] = 0) {// This is when you return and break up the linked list
+            if (next = 0) {// This is when you return and break up the linked list
                 if (minSize = largeVal) {
                     return -1; //This is if we fail to find a suitable space
                 } else {
@@ -65,7 +65,7 @@ class Memory {
                 }
             }
         let prev = curr;
-        let curr = heap[curr];
+        let curr = next;
         }
         return -1;
     }

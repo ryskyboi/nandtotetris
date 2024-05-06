@@ -9,7 +9,7 @@
  * consists of 32,768 words, each holding a 16-bit binary number.
  */
 class Memory {
-    static int freeList;
+    static int freeList, largeVal;
     static Array ram, heap;
 
     /** Initializes the class. */
@@ -19,6 +19,7 @@ class Memory {
         let heap[0] = 14335;
         let heap[1] = -1;
         let freeList = 2048;
+        let largeVal = 14335 + 1; // Just greater than the actual largest possible
         return;
     }
 
@@ -36,8 +37,7 @@ class Memory {
     /** Finds an available RAM block of the given size and returns
      *  a reference to its base address. */
     function int alloc(int size) {
-        var int prev, curr, segSize, minSize, minCurr, minPrev, largeVal;
-        let largeVal = 14335 + 1; // Just greater than the actual largest possible
+        var int prev, curr, segSize, minSize, minCurr, minPrev;
         let prev = -1;
         let minSize = largeVal;
         let curr = (freeList - heap);
