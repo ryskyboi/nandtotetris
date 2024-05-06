@@ -57,7 +57,6 @@ class Screen {
         let value = Memory.peek(address);
         let _bit = Screen.bit(value);
         let diff = x - (Math.divide(x, 16) * 16); //This should be (n)mod(16)
-        // do Output.printInt(diff);
         if (_bit[diff] = 1) { // This will see if it is a 0 or a 1 in that location at present
             if (~colour) {
                 let value = value - powersOfTwo[diff];
@@ -177,7 +176,7 @@ class Screen {
             let bitArray[n - 1] = 0;
         }
         while (i > -1) {  //It may prove better to do this with i but idk x > 0
-            if ((x + 1) > powersOfTwo[i]) { // Greater than or equal in int
+            if ((x > powersOfTwo[i]) | (x = powersOfTwo[i]))  { // Greater than or equal in int
                 let bitArray[i] = 1;
                 let x = x - powersOfTwo[i];
             }

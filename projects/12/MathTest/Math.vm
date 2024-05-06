@@ -270,14 +270,20 @@ gt
 not
 if-goto WHILE_END0
 push argument 0
-push constant 1
-add
 push local 1
 push static 1
 add
 pop pointer 1
 push that 0
 gt
+push argument 0
+push local 1
+push static 1
+add
+pop pointer 1
+push that 0
+eq
+or
 if-goto IF_TRUE1
 goto IF_FALSE1
 label IF_TRUE1

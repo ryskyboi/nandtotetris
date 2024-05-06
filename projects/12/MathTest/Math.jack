@@ -110,7 +110,6 @@ class Math {
         return x;
     }
 
-    // Returns an array of values for which correspond to when the i-th bit of x is 1
     function Array bit(int x) {
         var int curr_n, i;
         let i = n - 2;
@@ -122,7 +121,7 @@ class Math {
             let bitArray[n - 1] = 0;
         }
         while (i > -1) {  //It may prove better to do this with i but idk x > 0
-            if ((x + 1) > powersOfTwo[i]) { // Greater than or equal in int
+            if ((x > powersOfTwo[i]) | (x = powersOfTwo[i]))  { // Greater than or equal in int
                 let bitArray[i] = 1;
                 let x = x - powersOfTwo[i];
             }
