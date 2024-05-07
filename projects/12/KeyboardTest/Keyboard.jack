@@ -1,0 +1,127 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Keyboard.jack
+
+/**
+ * A library for handling user input from the keyboard.
+ */
+class Keyboard {
+    static int base;
+
+    /** Initializes the keyboard. */
+    function void init() {
+        let base = 24576;
+        return;
+    } 
+
+    /**
+     * Returns the character of the currently pressed key on the keyboard;
+     * if no key is currently pressed, returns 0.
+     *
+     * Recognizes all ASCII characters, as well as the following keys:
+     * new line = 128 = Output.newline()
+     * backspace = 129 = String.backspace()
+     * left arrow = 130
+     * up arrow = 131
+     * right arrow = 132
+     * down arrow = 133
+     * home = 134
+     * End = 135
+     * page up = 136
+     * page down = 137
+     * insert = 138
+     * delete = 139
+     * ESC = 140
+     * F1 - F12 = 141 - 152
+     */
+    function char keyPressed() {
+        var char key;
+        let key = Memory.peek(base);
+        return key;
+    }
+
+    /**								
+     * Waits until a key is pressed on the keyboard and released,
+     * then echoes the key to the screen, and returns the character 
+     * of the pressed key.
+     */
+    function char readChar() {
+        var char character;
+        while (Keyboard.keyPressed() = 0) {}
+        let character = Keyboard.keyPressed();
+        while (~(Keyboard.keyPressed() = 0)) {}
+        do Output.printChar(character);
+        return character;
+    }
+
+    /**								
+     * Displays the message on the screen, reads from the keyboard the entered
+     * text until a newline character is detected, echoes the text to the screen,
+     * and returns its value. Also handles user backspaces.
+     */
+    function String readLine(String message) {
+        var String new;
+        var char c;
+        do Output.printString(message);
+        let new = String.new(63); // Max a string could be
+        while (true) {
+            let c = Keyboard.readChar();
+            if (c = 128) {
+                do Output.println();
+                return new;
+            } else {
+                if (c = 129) {
+                    do new.eraseLastChar();
+                    do Output.backSpace();
+                } else {
+                    let new = new.appendChar(c);
+                }
+            }
+        }
+        return new;
+    } 
+
+    /**								
+     * Displays the message on the screen, reads from the keyboard the entered
+     * text until a newline character is detected, echoes the text to the screen,
+     * and returns its integer value (until the first non-digit character in the
+     * entered text is detected). Also handles user backspaces. 
+     */
+    function int readInt(String message) {
+        var int value, intvalue, multiplier, c; // we have 
+        var bool allint, isFirst;
+        do Output.printString(message);
+        let allint = true;
+        let isFirst = true;
+        let value = 0;
+        while (true) {
+            let c = Keyboard.readChar();
+            if (c = 128) {
+                do Output.println();
+                return value * multiplier;
+            } else {
+                if (c = 129) {
+                    let value = (value / 10);
+                    do Output.backSpace();
+                } else {
+                    if (isFirst) {
+                        if (c = 45) {
+                            let multiplier = -1;
+                        } else {
+                            let multiplier = 1;
+                        }
+                    }
+                    if (((c > 47) & (c < 58)) & (allint)) {
+                        let intvalue = c - 48;
+                        let value  = (value * 10)  + intvalue;
+                    } else {
+                        if (~isFirst){let allint = false;}
+                    }
+                }
+            }
+            let isFirst = false;
+        }
+        return value;
+    }
+}
